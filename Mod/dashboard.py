@@ -98,13 +98,13 @@ def update_output(value, btn1, btn2):
     
 
     if 'btn-nclicks-1' in changed_graph:
-        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020')
+        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020')
         
     elif 'btn-nclicks-2' in changed_graph:
-        fig = px.scatter(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020', trendline='ols')
+        fig = px.scatter(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020', trendline='ols')
         
     else:
-        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020')
+        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020')
         
     return dcc.Graph(id='example-graph', figure=fig)
     

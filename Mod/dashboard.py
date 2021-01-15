@@ -3,36 +3,49 @@
 # Run this app with `python app.py` and
 # visit http://127.0.0.1:8050/ in your web browser.
 
+import xarray as xr
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
 import pandas as pd
 import statsmodels as sm
+import seaborn as sns
+sns.set_style('darkgrid')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+def cutMean(df):
+    df = df.groupby('time').mean()
+    BG = xr.Dataset(df)
+    ends = BG.where(BG['time.month'] >= 10, drop=True)
+    begins = BG.where(BG['time.month'] < 4, drop=True)
+    dataset = xr.concat([ends, begins], dim='time')
+    dataset = dataset.sortby(dataset.time).dropna(dim='time')
+
+    return dataset.to_dataframe()
+
 # Saving pandas.DataFrame's results to variables
-FU = pd.read_pickle('Furnas.pkl')
-PR = pd.read_pickle('Passo Real - Jacui.pkl')
-FA = pd.read_pickle('Foz do Areia.pkl')
-BE = pd.read_pickle('Boa Esperanca - Parnaiba.pkl')
-SA = pd.read_pickle('Santo Antonio - Madeira.pkl')
-SS = pd.read_pickle('Sao Simao.pkl')
-SO = pd.read_pickle('Sobradinho.pkl')
-TU = pd.read_pickle('Tucurui - Tocantins.pkl')
+FU = cutMean(pd.read_pickle('Furnas.pkl'))
+PR = cutMean(pd.read_pickle('Passo Real - Jacui.pkl'))
+FA = cutMean(pd.read_pickle('Foz do Areia.pkl'))
+BE = cutMean(pd.read_pickle('Boa Esperanca - Parnaiba.pkl'))
+SA = cutMean(pd.read_pickle('Santo Antonio - Madeira.pkl'))
+SS = cutMean(pd.read_pickle('Sao Simao.pkl'))
+SO = cutMean(pd.read_pickle('Sobradinho.pkl'))
+TU = cutMean(pd.read_pickle('Tucurui - Tocantins.pkl'))
 
 
 #   Third section             -------------------------------
 
 app.layout = html.Div(children=[
-    html.H1(children='Powerplant precipitation', style={
+    html.H1(children='Precipitação - Usinas', style={
         'textAlign': 'center'}),
 
     html.Div(children='''
-        Choose Powerplant:
+       Usinas:
     '''),
     dcc.Dropdown(
         id='demo-dropdown',
@@ -85,13 +98,13 @@ def update_output(value, btn1, btn2):
     
 
     if 'btn-nclicks-1' in changed_graph:
-        fig = px.line(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020')
+        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020')
         
     elif 'btn-nclicks-2' in changed_graph:
-        fig = px.scatter(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020', trendline='ols')
+        fig = px.scatter(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020', trendline='ols')
         
     else:
-        fig = px.line(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020')
+        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina | 01/1979 - 11/2020')
         
     return dcc.Graph(id='example-graph', figure=fig)
     

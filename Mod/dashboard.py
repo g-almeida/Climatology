@@ -28,11 +28,11 @@ TU = pd.read_pickle('Tucurui - Tocantins.pkl')
 #   Third section             -------------------------------
 
 app.layout = html.Div(children=[
-    html.H1(children='Usin precipitation', style={
+    html.H1(children='Powerplant precipitation', style={
         'textAlign': 'center'}),
 
     html.Div(children='''
-        Choose Usin:
+        Choose Powerplant:
     '''),
     dcc.Dropdown(
         id='demo-dropdown',
@@ -85,13 +85,13 @@ def update_output(value, btn1, btn2):
     
 
     if 'btn-nclicks-1' in changed_graph:
-        fig = px.line(var, x='time', y='precip', title='Precipitation along the usin shape | 01/1979 - 11/2020')
+        fig = px.line(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020')
         
     elif 'btn-nclicks-2' in changed_graph:
-        fig = px.scatter(var, x='time', y='precip', title='Precipitation along the usin shape | 01/1979 - 11/2020', trendline='ols')
+        fig = px.scatter(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020', trendline='ols')
         
     else:
-        fig = px.line(var, x='time', y='precip', title='Precipitation along the usin shape | 01/1979 - 11/2020')
+        fig = px.line(var, x='time', y='precip', title='Precipitation along the Powerplant shape | 01/1979 - 11/2020')
         
     return dcc.Graph(id='example-graph', figure=fig)
     

@@ -1,9 +1,9 @@
-.nc
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
-
+.png
+.pkl
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
@@ -118,3 +118,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.nc
+*.nc

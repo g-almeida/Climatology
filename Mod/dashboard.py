@@ -17,25 +17,23 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-def cutMean(df):
-    df = df.groupby('time').mean()
-    BG = xr.Dataset(df)
-    ends = BG.where(BG['time.month'] >= 10, drop=True)
-    begins = BG.where(BG['time.month'] < 4, drop=True)
-    dataset = xr.concat([ends, begins], dim='time')
-    dataset = dataset.sortby(dataset.time).dropna(dim='time')
-
-    return dataset.to_dataframe()
+def DJF(df):
+    c = xr.Dataset(df)
+    c = c.sel(time=slice('1979-01-31','2020-01-01'))
+    c = c.where((c['time.month']==2) | (c['time.month']==1) | (c['time.month']==12)).dropna(dim='time').to_dataframe()
+    c = c.drop(['lat','lon'],axis=1)
+    c.index = pd.to_datetime(c.index)
+    return c
 
 # Saving pandas.DataFrame's results to variables
-FU = cutMean(pd.read_pickle('Furnas.pkl'))
-PR = cutMean(pd.read_pickle('Passo Real - Jacui.pkl'))
-FA = cutMean(pd.read_pickle('Foz do Areia.pkl'))
-BE = cutMean(pd.read_pickle('Boa Esperanca - Parnaiba.pkl'))
-SA = cutMean(pd.read_pickle('Santo Antonio - Madeira.pkl'))
-SS = cutMean(pd.read_pickle('Sao Simao.pkl'))
-SO = cutMean(pd.read_pickle('Sobradinho.pkl'))
-TU = cutMean(pd.read_pickle('Tucurui - Tocantins.pkl'))
+BE = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/b_esperanca.pkl'))
+FU = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/furnas.pkl'))
+GB = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/g_b_munhoz.pkl'))
+PR = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/passo_real.pkl'))
+SA = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/santo_antonio.pkl'))
+SS = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/sao_simao.pkl'))
+SO = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/sobradinho.pkl'))
+TU = DJF(pd.read_pickle('/home/github/Climatology/Mod/Files/tucurui.pkl'))
 
 
 #   Third section             -------------------------------
@@ -83,8 +81,8 @@ def update_output(value, btn1, btn2):
         var = FU
     elif value == "PR":
         var = PR
-    elif value == "FA":
-        var = FA
+    elif value == "GB":
+        var = GB
     elif value == "BE":
         var = BE
     elif value == "SA":
@@ -98,10 +96,10 @@ def update_output(value, btn1, btn2):
     
 
     if 'btn-nclicks-1' in changed_graph:
-        fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020')
+        fig = px.line(var, x=var.index.astype(str), y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020')
         
     elif 'btn-nclicks-2' in changed_graph:
-        fig = px.scatter(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020', trendline='ols')
+        fig = px.scatter(var, x=var, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020', trendline='ols')
         
     else:
         fig = px.line(var, x=var.index, y='precip', title='Precipitação ao longo do shape da usina no período úmido | 01/1979 - 11/2020')
